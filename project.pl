@@ -23,19 +23,30 @@ edgegrid1([X,Y|G],X,0,[1|E], L) :- L #>= X, X #> 0, Y #> 0, Y1 + 1 #= Y, edgegri
 
 hasEdgegrid(L) :- edgegrid(L,_).
 
+%Handles the rule that there are no crossing edges on the grid
+noCrosses([1],[1],[_],[_]).
+noCrosses([0,Y|V1], [_,Y2|V2], [_,W|H1],[_,W2|H2]) :- noCrosses([Y|V1],[Y2|V2],[W|H1],[W2|H2]).
+noCrosses([_,Y|V1], [0,Y2|V2], [_,W|H1],[_,W2|H2]) :- noCrosses([Y|V1],[Y2|V2],[W|H1],[W2|H2]).
+noCrosses([_,Y|V1], [_,Y2|V2], [0,W|H1],[_,W2|H2]) :- noCrosses([Y|V1],[Y2|V2],[W|H1],[W2|H2]).
+noCrosses([_,Y|V1], [_,Y2|V2], [_,0|H1],[_,W2|H2]) :- noCrosses([Y|V1],[Y2|V2],[0|H1],[W2|H2]).
 
-noCrosses([X,Y|H],[Z|V1],[W|V2]) :- noCrosses([Y|H],V1,V2).
+neverCrosses([_],[_]).
+neverCrosses([X,Y|V],[Z,W|H]) :- noCrosses(X,Y,Z,W), neverCrosses([Y|V],[W|H]).
 
 %True if the given list of lists is a rectangle
 isRect([X|LL]) :- maplist(same_length(X), LL).
 
 %True if LL is a rectangular array full of squares, such that each square is marked by it's size
 squaregrid(LL) :- isRect(LL), myTranspose(LL,TL), 
-    maplist(edgegrid,LL,EG1), maplist(edgegrid, TL, EG2).
+    maplist(edgegrid,LL,VE), maplist(edgegrid, TL, EG2),
+    myTranspose(EG2,HE), neverCrosses(VE,HE).
+
+edgegrids(LL,H,V) :- isRect(LL), myTranspose(LL,TL),
+    maplist(edgegrid,LL,H), maplist(edgegrid, TL, EG2),
+    myTranspose(EG2,V), printLL(H), nl, printLL(V).
 
 %Two numbers are equal, or one is zero
 matches(X,X).
-matches(_,0).
 matches(0,_).
 
 allMatches(L,M) :- maplist(matches, L, M).
@@ -56,3 +67,8 @@ allAllNums(LLS,LLI) :- maplist(allNums, LLS, LLI).
 
 %Takes a string input and solves it as a Square Jam puzzle
 solve(S, MM) :- stringToLL(S,LL), allAllNums(LL,LLI), allAllMatches(LLI,MM), squaregrid(MM).
+
+printL([]).
+printL([X|L]) :- write(X), write(" "), printL(L).
+printLL([]).
+printLL([X|LL]) :- printL(X), nl, printLL(LL).
