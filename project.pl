@@ -72,3 +72,7 @@ printL([]).
 printL([X|L]) :- write(X), write(" "), printL(L).
 printLL([]).
 printLL([X|LL]) :- printL(X), nl, printLL(LL).
+
+:- initialization main.
+
+main :- file(S), solve(S,MM), printLL(MM).
