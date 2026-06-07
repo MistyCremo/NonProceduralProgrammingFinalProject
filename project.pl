@@ -75,4 +75,4 @@ printLL([X|LL]) :- printL(X), nl, printLL(LL).
 
 :- initialization(main,main).
 
-main :- file(S), solve(S,MM), printLL(MM).
+main :- file(S), solve(S,MM), printLL(MM), !; writeln("No solution").
