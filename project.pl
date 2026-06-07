@@ -46,7 +46,7 @@ edgegrids(LL,H,V) :- isRect(LL), myTranspose(LL,TL),
     myTranspose(EG2,V), printLL(H), nl, printLL(V).
 
 %Two numbers are equal, or one is zero
-matches(X,X).
+matches(X,X) :- dif(X,0).
 matches(0,_).
 
 allMatches(L,M) :- maplist(matches, L, M).
@@ -73,6 +73,6 @@ printL([X|L]) :- write(X), write(" "), printL(L).
 printLL([]).
 printLL([X|LL]) :- printL(X), nl, printLL(LL).
 
-:- initialization main.
+:- initialization(main,main).
 
 main :- file(S), solve(S,MM), printLL(MM).
